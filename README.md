@@ -34,7 +34,7 @@ A private release-review dashboard for discovering new Spotify tracks by an expl
 | `OAUTH_STATE_SECRET` | Long random key for signed OAuth state; store as a Worker secret |
 | `RELEASE_LOOKBACK_DAYS` | Optional scan window, defaults to `30` |
 | `VITE_API_URL` | Public Worker origin used only by the frontend |
-| `VITE_BASE_PATH` | Vite Pages base, e.g. `/repository-name/`; use `/` for local/custom-domain use |
+| `VITE_BASE_PATH` | Optional Vite Pages base override. The deployment workflow defaults to `/<repository-name>/`; use `/` for a user site or custom domain |
 
 Copy `.env.example` for reference. Vite values go in `apps/web/.env.local`. Worker local values go in the gitignored `apps/worker/.dev.vars`; do not create or commit a root `.env`.
 
@@ -84,7 +84,7 @@ Cloudflare Dashboard environment variables are an alternative and are recommende
 ## GitHub Pages deployment
 
 1. Push the repository to GitHub and choose **Settings → Pages → Source → GitHub Actions**.
-2. Under **Settings → Secrets and variables → Actions → Variables**, set `VITE_API_URL` to the Worker origin and `VITE_BASE_PATH` to `/<repository-name>/` (or `/` for a user site/custom domain).
+2. Under **Settings → Secrets and variables → Actions → Variables**, set `VITE_API_URL` to the Worker origin. Project sites automatically use `/<repository-name>/`; set `VITE_BASE_PATH` only to override that default (for example, `/` for a user site/custom domain).
 3. Set the Worker's `FRONTEND_URL` to the Pages **origin** (`https://user.github.io`, without the repository path), and add the production Worker callback to Spotify.
 4. Push `main` or manually run **Deploy GitHub Pages**. The workflow installs, tests, builds, uploads, and deploys the Vite artifact.
 
