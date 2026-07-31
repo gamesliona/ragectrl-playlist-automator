@@ -1,0 +1,7 @@
+import type { ApiResponse } from "@ragectrl/shared"; import type { Env } from "./types";
+export class ApiError extends Error { constructor(public status:number, public code:string, message:string){super(message)} }
+export function json<T>(data:T,status=200,headers:HeadersInit={}):Response { return Response.json({success:true,data} satisfies ApiResponse<T>,{status,headers}) }
+export function errorResponse(error:unknown,headers:HeadersInit={}):Response { const known=error instanceof ApiError; return Response.json({success:false,error:{code:known?error.code:"INTERNAL_ERROR",message:known?error.message:"The request could not be completed."}},{status:known?error.status:500,headers}) }
+export function cors(env:Env):HeadersInit { return {"access-control-allow-origin":env.FRONTEND_URL,"access-control-allow-credentials":"true","access-control-allow-headers":"content-type","access-control-allow-methods":"GET,POST,PUT,OPTIONS","vary":"Origin"} }
+export function assertOrigin(request:Request,env:Env):void { const origin=request.headers.get("origin"); if(origin&&origin!==env.FRONTEND_URL) throw new ApiError(403,"INVALID_ORIGIN","Origin is not allowed.") }
+export async function bodyObject(request:Request):Promise<Record<string,unknown>> { try { const value:unknown=await request.json(); if(!value||typeof value!=="object"||Array.isArray(value)) throw new Error(); return value as Record<string,unknown> } catch { throw new ApiError(400,"INVALID_JSON","Request body must be a JSON object.") } }

@@ -1,0 +1,13 @@
+name = "ragectrl-playlist-automator"
+main = "src/index.ts"
+compatibility_date = "2025-07-01"
+
+[[kv_namespaces]]
+binding = "APP_KV"
+id = "REPLACE_WITH_PRODUCTION_KV_ID"
+preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+
+[vars]
+RELEASE_LOOKBACK_DAYS = "30"
+# Set non-secret production values with `wrangler deploy --var NAME:value` or in the dashboard.
+# Set OAUTH_STATE_SECRET using `wrangler secret put OAUTH_STATE_SECRET`.

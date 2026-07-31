@@ -1,0 +1,1 @@
+{"name":"ragectrl-playlist-automator","private":true,"workspaces":["apps/*","packages/*"],"scripts":{"dev:web":"npm run dev -w @ragectrl/web","dev:worker":"npm run dev -w @ragectrl/worker","build":"npm run build -ws --if-present","test":"vitest run","typecheck":"npm run typecheck -ws --if-present"},"devDependencies":{"typescript":"^5.8.3","vitest":"^3.2.4"}}
