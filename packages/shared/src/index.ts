@@ -1,0 +1,11 @@
+export type WatchlistArtist = { id: string; name: string; enabled: boolean; priority?: number };
+export type AlbumType = "single" | "album" | "compilation";
+export type ReviewStatus = "pending" | "approved" | "rejected";
+export type OrderingMode = "newest" | "oldest" | "random" | "keep";
+export type ReleaseTrack = { spotifyTrackId: string; spotifyUri: string; title: string; artists: { id: string; name: string }[]; primaryArtistIds: string[]; albumId: string; albumName: string; albumType: AlbumType; releaseDate: string; durationMs: number; artworkUrl?: string; externalUrl: string; status: ReviewStatus };
+export type AppSettings = { playlistId: string; orderingMode: OrderingMode; primaryArtistOnly: boolean };
+export type PlaylistSummary = { name: string; artworkUrl?: string; trackCount: number; lastScanAt?: string; pendingCount: number };
+export type ConnectionStatus = { connected: boolean; playlist: PlaylistSummary; settings: AppSettings };
+export type PlaylistAddSummary = { requested: number; added: number; alreadyPresent: number; failed: number };
+export type ApiResponse<T> = { success: true; data: T } | { success: false; error: { code: string; message: string } };
+export const orderingModes: OrderingMode[] = ["newest", "oldest", "random", "keep"];

@@ -1,0 +1,9 @@
+import { ApiError } from "./http";
+export class SpotifyClient { constructor(private token:string){} private async request<T>(path:string,init?:RequestInit,attempt=0):Promise<T>{const response=await fetch(`https://api.spotify.com/v1${path}`,{...init,headers:{authorization:`Bearer ${this.token}`,"content-type":"application/json",...init?.headers}});if(response.ok)return response.status===204?({} as T):await response.json() as T;if((response.status===429||response.status>=500)&&attempt<3){const retry=Number(response.headers.get("retry-after")??2**attempt);await new Promise(r=>setTimeout(r,Math.min(retry*1000,8000)));return this.request(path,init,attempt+1)}if(response.status===401)throw new ApiError(401,"SPOTIFY_UNAUTHORIZED","Spotify authorization expired.");throw new ApiError(502,"SPOTIFY_API_ERROR",`Spotify request failed (${response.status}).`)}
+ get<T>(path:string){return this.request<T>(path)} post<T>(path:string,body:unknown){return this.request<T>(path,{method:"POST",body:JSON.stringify(body)})}
+}
+export type SpotifyPage<T>={items:T[];next:string|null};
+export type SpotifyArtist={id:string;name:string};
+export type SpotifyAlbum={id:string;name:string;album_type:"album"|"single"|"compilation";release_date:string;artists:SpotifyArtist[];images:{url:string}[]};
+export type SpotifyTrack={id:string;uri:string;name:string;artists:SpotifyArtist[];duration_ms:number;external_urls:{spotify:string};album?:SpotifyAlbum};
+export async function allPages<T>(client:SpotifyClient,path:string,limit=20):Promise<T[]>{const items:T[]=[];let next:string|null=`${path}${path.includes("?")?"&":"?"}limit=50`;while(next&&items.length<limit*50){const endpoint=next.startsWith("https://api.spotify.com/v1")?next.slice(26):next;const page:SpotifyPage<T>=await client.get(endpoint);items.push(...page.items);next=page.next}return items}

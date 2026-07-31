@@ -1,0 +1,5 @@
+import { orderingModes, type OrderingMode } from "@ragectrl/shared"; import { ApiError } from "./http";
+const spotifyId=/^[A-Za-z0-9]{1,64}$/;
+export function parseTrackIds(body:Record<string,unknown>):string[]{ if(!Array.isArray(body.trackIds)||body.trackIds.length<1||body.trackIds.length>100||!body.trackIds.every(v=>typeof v==="string"&&spotifyId.test(v))) throw new ApiError(400,"INVALID_TRACK_IDS","trackIds must contain 1–100 valid Spotify IDs."); return [...new Set(body.trackIds as string[])] }
+export function parseOrdering(value:unknown):OrderingMode { if(typeof value!=="string"||!orderingModes.includes(value as OrderingMode)) throw new ApiError(400,"INVALID_ORDERING","Unknown ordering mode."); return value as OrderingMode }
+export function parseSettings(body:Record<string,unknown>){ const playlistId=body.playlistId, primaryArtistOnly=body.primaryArtistOnly; if(typeof playlistId!=="string"||!spotifyId.test(playlistId)||typeof primaryArtistOnly!=="boolean") throw new ApiError(400,"INVALID_SETTINGS","Invalid settings fields."); return {playlistId,orderingMode:parseOrdering(body.orderingMode),primaryArtistOnly} }
